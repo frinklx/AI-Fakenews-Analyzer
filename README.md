@@ -159,6 +159,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
+frinklx - [@frinklx](https://x.com/frinklx)
 
-Project Link: [https://github.com/yourusername/fakenews](https://github.com/yourusername/fakenews) 
+Project Link: [https://github.com/frinklx/AI-Fakenews-Analyzer](https://github.com/frinklx/AI-Fakenews-Analyzer) 
