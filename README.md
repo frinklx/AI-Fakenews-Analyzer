@@ -162,3 +162,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 frinklx - [@frinklx](https://x.com/frinklx)
 
 Project Link: [https://github.com/frinklx/AI-Fakenews-Analyzer](https://github.com/frinklx/AI-Fakenews-Analyzer) 
+
+## yes this readme was made by chatgpt. sorry i couldnt be bothered to make a 50 page essay on how to setup a simple analyzer lol
