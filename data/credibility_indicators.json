@@ -1,0 +1,74 @@
+{
+  "factual_language": [
+    "according to",
+    "research shows",
+    "studies indicate",
+    "evidence suggests",
+    "data shows",
+    "experts say",
+    "official records",
+    "verified by",
+    "confirmed by",
+    "documented in"
+  ],
+  "emotional_language": [
+    "shocking",
+    "outrageous",
+    "unbelievable",
+    "must see",
+    "won't believe",
+    "amazing",
+    "breaking",
+    "bombshell",
+    "explosive",
+    "scandalous"
+  ],
+  "source_citation": [
+    "reported by",
+    "published in",
+    "cited in",
+    "as stated in",
+    "according to sources",
+    "investigation by",
+    "analysis from",
+    "findings from",
+    "research published in",
+    "study conducted by"
+  ],
+  "bias_indicators": [
+    "clearly",
+    "obviously",
+    "undoubtedly",
+    "without question",
+    "everyone knows",
+    "of course",
+    "naturally",
+    "certainly",
+    "always",
+    "never"
+  ],
+  "conspiracy_language": [
+    "they don't want you to know",
+    "what they're hiding",
+    "the truth about",
+    "what really happened",
+    "cover up",
+    "conspiracy",
+    "secret agenda",
+    "hidden truth",
+    "exposed",
+    "real story"
+  ],
+  "verification_markers": [
+    "fact check:",
+    "correction:",
+    "update:",
+    "editor's note:",
+    "clarification:",
+    "verified information:",
+    "official statement:",
+    "primary source:",
+    "direct quote:",
+    "on the record"
+  ]
+}

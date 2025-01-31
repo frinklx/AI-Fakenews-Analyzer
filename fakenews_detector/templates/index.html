@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Fake News Detector</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0b14;
+        --bg-secondary: #12141f;
+        --bg-card: #1a1d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #9ca3af;
+        --accent-purple: #8b5cf6;
+        --accent-blue: #3b82f6;
+        --accent-pink: #ec4899;
+        --accent-green: #10b981;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --card-border: rgba(255, 255, 255, 0.05);
+        --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        --gradient-1: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        --gradient-2: linear-gradient(135deg, #3b82f6, #ec4899);
+        --gradient-3: linear-gradient(135deg, #ec4899, #8b5cf6);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+        background-image: radial-gradient(
+            circle at 0% 0%,
+            rgba(139, 92, 246, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 100% 0%,
+            rgba(59, 130, 246, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 100% 100%,
+            rgba(236, 72, 153, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 0% 100%,
+            rgba(16, 185, 129, 0.05) 0%,
+            transparent 50%
+          );
+        background-attachment: fixed;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .header {
+        text-align: center;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+        font-family: "Poppins", sans-serif;
+        animation: slideIn 1s ease-out;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(
+          135deg,
+          var(--accent-purple),
+          var(--accent-blue),
+          var(--accent-pink)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientFlow 8s ease infinite;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .glass-card {
+        background: linear-gradient(
+          135deg,
+          rgba(26, 29, 45, 0.9),
+          rgba(18, 20, 31, 0.8)
+        );
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 0 32px rgba(255, 255, 255, 0.02);
+        border-radius: 24px;
+        padding: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: slideIn 1s ease-out;
+        animation-fill-mode: both;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .glass-card:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+      .glass-card:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+      .glass-card:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      .input-section {
+        margin-bottom: 3rem;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 0.5rem;
+        background: rgba(18, 20, 31, 0.5);
+        border-radius: 16px;
+        padding: 0.5rem;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab-button.active {
+        background: linear-gradient(
+          135deg,
+          var(--accent-purple),
+          var(--accent-blue)
+        );
+        color: white;
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+      }
+
+      .input-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .floating-label {
+        position: absolute;
+        left: 1rem;
+        top: 1.5rem;
+        pointer-events: none;
+        transition: 0.3s ease all;
+        color: var(--text-secondary);
+      }
+
+      .input-field:focus + .floating-label,
+      .input-field:not(:placeholder-shown) + .floating-label {
+        transform: translateY(-2.5rem) scale(0.85);
+        color: var(--accent-purple);
+      }
+
+      .input-field {
+        background: rgba(10, 11, 20, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .input-field:focus {
+        background: rgba(10, 11, 20, 0.8);
+        border-color: var(--accent-purple);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      }
+
+      .analyze-button {
+        width: 100%;
+        padding: 1.5rem;
+        border: none;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        background: var(--gradient-1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .analyze-button::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: shimmer 3s infinite;
+      }
+
+      .analyze-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+      }
+
+      .analyze-button:active {
+        transform: translateY(1px);
+      }
+
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .metric-card {
+        position: relative;
+        overflow: hidden;
+        padding: 2rem;
+        background: linear-gradient(
+          145deg,
+          rgba(26, 29, 45, 0.9),
+          rgba(18, 20, 31, 0.95)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        animation: fadeInScale 0.5s ease-out forwards;
+      }
+
+      .metric-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .metric-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .metric-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-purple),
+          var(--accent-blue)
+        );
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      .metric-icon svg {
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        background: linear-gradient(135deg, #fff, #a0a0a0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--accent-purple),
+          var(--accent-blue)
+        );
+        border-radius: 3px;
+        transition: width 1s ease;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 11, 20, 0.95);
+        backdrop-filter: blur(20px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .loading-content {
+        text-align: center;
+        color: var(--text-primary);
+      }
+
+      .loading-spinner {
+        width: 80px;
+        height: 80px;
+        border: 4px solid rgba(139, 92, 246, 0.1);
+        border-top: 4px solid var(--accent-purple);
+        border-right: 4px solid var(--accent-blue);
+        border-bottom: 4px solid var(--accent-pink);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 2rem;
+      }
+
+      .loading-text {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+      }
+
+      .loading-steps {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .loading-step {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .loading-step.active {
+        color: var(--accent-purple);
+      }
+
+      .fact-check-card {
+        background: rgba(26, 29, 45, 0.7);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--card-border);
+        transition: all 0.3s ease;
+      }
+
+      .fact-check-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .source-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.1),
+          rgba(59, 130, 246, 0.1)
+        );
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        color: var(--accent-purple);
+        margin-top: 1rem;
+      }
+
+      .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .status-badge.verified {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--success);
+      }
+
+      .status-badge.suspicious {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+      }
+
+      .status-badge.fake {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5rem 1rem;
+        background: rgba(26, 29, 45, 0.95);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        z-index: 1000;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      .score-ring {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 1.5rem auto;
+      }
+
+      .score-ring svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+      }
+
+      .score-ring circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.5s ease-in-out;
+      }
+
+      .score-ring .background {
+        stroke: rgba(255, 255, 255, 0.05);
+      }
+
+      .score-ring .progress {
+        stroke: url(#gradient-1);
+        stroke-dasharray: 339.292;
+        stroke-dashoffset: 339.292;
+      }
+
+      .score-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      }
+
+      .score-label {
+        position: absolute;
+        bottom: -2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+
+      .expandable-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .expandable-card .content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .expandable-card.expanded .content {
+        max-height: 500px;
+      }
+
+      .expandable-card .expand-icon {
+        transition: transform 0.3s ease;
+      }
+
+      .expandable-card.expanded .expand-icon {
+        transform: rotate(180deg);
+      }
+
+      @keyframes gradientFlow {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-150%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(150%) rotate(45deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.2);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+
+        .results-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .score-ring {
+          width: 120px;
+          height: 120px;
+        }
+
+        .score-value {
+          font-size: 1.5rem;
+        }
+
+        .loading-steps {
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+      }
+
+      @keyframes fillProgress {
+        from {
+          stroke-dashoffset: 339.292;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      @keyframes fadeInScale {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .metric-card {
+        animation: fadeInScale 0.5s ease-out forwards;
+      }
+
+      .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .status-badge.verified {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--success);
+      }
+
+      .status-badge.suspicious {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+      }
+
+      .status-badge.fake {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+    </style>
+
+    <svg width="0" height="0">
+      <defs>
+        <linearGradient id="gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: var(--accent-purple)" />
+          <stop offset="100%" style="stop-color: var(--accent-blue)" />
+        </linearGradient>
+        <linearGradient id="gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: var(--accent-blue)" />
+          <stop offset="100%" style="stop-color: var(--accent-pink)" />
+        </linearGradient>
+        <linearGradient id="gradient-3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: var(--accent-pink)" />
+          <stop offset="100%" style="stop-color: var(--accent-purple)" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </head>
+  <body class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <header class="text-center mb-12">
+        <div class="inline-block mb-4">
+          <svg
+            class="w-16 h-16 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
+            />
+          </svg>
+        </div>
+        <h1 class="text-5xl font-bold text-gray-900 mb-3" style="color: white">
+          AI Fake News Detector
+        </h1>
+        <p class="text-xl text-gray-600" style="color: white">
+          Analyze news articles using advanced AI to detect potential
+          misinformation
+        </p>
+      </header>
+
+      <div class="glass-card input-section">
+        <div class="tab-buttons">
+          <button class="tab-button active" data-tab="url">
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+              />
+            </svg>
+            URL Analysis
+          </button>
+          <button class="tab-button" data-tab="text">
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Text Analysis
+          </button>
+        </div>
+
+        <div id="url-input" class="tab-content">
+          <div class="input-wrapper">
+            <input type="url" class="input-field" placeholder=" " />
+            <label class="floating-label">Enter article URL</label>
+          </div>
+        </div>
+
+        <div id="text-input" class="tab-content" style="display: none">
+          <div class="input-wrapper">
+            <textarea class="input-field" rows="6" placeholder=" "></textarea>
+            <label class="floating-label">Paste article text here</label>
+          </div>
+        </div>
+
+        <button class="analyze-button">
+          <span class="flex items-center justify-center">
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            Analyze Content
+          </span>
+        </button>
+      </div>
+
+      <div class="results-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <div
+              class="metric-icon tooltip"
+              data-tooltip="Overall credibility score based on multiple factors"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3>Credibility Score</h3>
+          </div>
+          <div class="score-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="background" cx="60" cy="60" r="54" />
+              <circle class="progress" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="score-value" id="credibility-score">0%</div>
+          </div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <div
+              class="metric-icon tooltip"
+              data-tooltip="Bias analysis to identify potential biases in the content"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3>Bias Analysis</h3>
+          </div>
+          <div class="score-ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="background" cx="60" cy="60" r="54" />
+              <circle class="progress" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="score-value" id="bias-score">0%</div>
+          </div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <div
+              class="metric-icon tooltip"
+              data-tooltip="Source reliability analysis to assess the trustworthiness of the content"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+            </div>
+            <h3>Source Reliability</h3>
+          </div>
+          <div class="score-ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="background" cx="60" cy="60" r="54" />
+              <circle class="progress" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="score-value" id="reliability-score">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card expandable-card" style="margin-top: 2rem">
+        <div
+          class="card-header flex justify-between items-center cursor-pointer"
+        >
+          <h2>Fact Check Results</h2>
+          <svg
+            class="expand-icon w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+        <div class="content" id="fact-checks"></div>
+      </div>
+
+      <div class="glass-card expandable-card" style="margin-top: 2rem">
+        <div
+          class="card-header flex justify-between items-center cursor-pointer"
+        >
+          <h2>Similar Claims</h2>
+          <svg
+            class="expand-icon w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+        <div class="content" id="similar-claims"></div>
+      </div>
+    </div>
+
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Analyzing content...</div>
+        <div class="loading-steps">
+          <div class="loading-step active">Extracting content</div>
+          <div class="loading-step">Analyzing credibility</div>
+          <div class="loading-step">Checking facts</div>
+          <div class="loading-step">Generating report</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const analyzeButton = document.querySelector(".analyze-button");
+        const loadingOverlay = document.querySelector(".loading-overlay");
+
+        // Tab switching
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+
+            const tabId = button.dataset.tab;
+            document.querySelectorAll(".tab-content").forEach((content) => {
+              content.style.display = "none";
+            });
+            document.getElementById(`${tabId}-input`).style.display = "block";
+          });
+        });
+
+        // Analyze button click handler
+        analyzeButton.addEventListener("click", async () => {
+          console.log("Analyze button clicked");
+
+          const activeTab =
+            document.querySelector(".tab-button.active").dataset.tab;
+          console.log("Active tab:", activeTab);
+
+          const input =
+            activeTab === "url"
+              ? document.querySelector("#url-input input").value
+              : document.querySelector("#text-input textarea").value;
+
+          console.log("Input:", input);
+
+          if (!input.trim()) {
+            console.warn("Empty input detected");
+            alert("Please enter a URL or text to analyze");
+            return;
+          }
+
+          loadingOverlay.style.display = "flex";
+          console.log("Loading overlay displayed");
+
+          try {
+            console.log("Sending request to server...");
+            const response = await fetch("/analyze", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(
+                activeTab === "url" ? { url: input } : { text: input }
+              ),
+            });
+
+            console.log("Server response:", response);
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Received data:", data);
+
+            if (!data) {
+              throw new Error("No data received from server");
+            }
+
+            updateResults(data);
+          } catch (error) {
+            console.error("Error during analysis:", error);
+            alert(
+              "An error occurred while analyzing the content: " + error.message
+            );
+          } finally {
+            loadingOverlay.style.display = "none";
+            console.log("Loading overlay hidden");
+          }
+        });
+
+        function updateResults(data) {
+          // Reduce console noise by logging only important data
+          console.group("Analysis Results");
+          console.log("Raw data:", data);
+
+          // Map API response to scores
+          const scores = {
+            credibility_score: data.confidence ? data.confidence / 100 : 0,
+            bias_score: data.bias_level ? mapBiasToScore(data.bias_level) : 0,
+            source_reliability: data.detailed_scores
+              ? data.detailed_scores.source_reliability || 0
+              : 0,
+          };
+          console.log("Mapped scores:", scores);
+
+          // Helper function to map bias level to score
+          function mapBiasToScore(biasLevel) {
+            const biasMap = {
+              LOW: 0.8,
+              MEDIUM: 0.5,
+              HIGH: 0.2,
+            };
+            return biasMap[biasLevel.toUpperCase()] || 0.5;
+          }
+
+          // Ensure data values are numbers and handle undefined/null cases
+          const safeNumber = (value) => {
+            const num = parseFloat(value);
+            return isNaN(num) ? 0 : Math.max(0, Math.min(1, num));
+          };
+
+          // Format numbers with better precision
+          const formatNumber = (num) => Math.round(safeNumber(num) * 100);
+
+          // Update score displays with optimized animations
+          const updateScore = (elementId, score, gradient) => {
+            const element = document.getElementById(elementId);
+            if (!element) {
+              console.error(`Element not found: ${elementId}`);
+              return;
+            }
+
+            const ring = element
+              .closest(".score-ring")
+              .querySelector(".progress");
+            if (!ring) {
+              console.error(`Progress ring not found for: ${elementId}`);
+              return;
+            }
+
+            const circumference = 2 * Math.PI * 54;
+            const safeScore = safeNumber(score);
+            const target = formatNumber(safeScore);
+
+            // Optimize animation by reducing update frequency
+            const duration = 1000; // Reduced from 1500ms
+            const steps = 30; // Reduced number of steps
+            const increment = target / steps;
+            let current = 0;
+
+            const animate = () => {
+              current += increment;
+              if (current >= target) {
+                current = target;
+                element.textContent = `${target}%`;
+                ring.style.strokeDashoffset =
+                  circumference - safeScore * circumference;
+                return;
+              }
+
+              element.textContent = `${Math.round(current)}%`;
+              ring.style.strokeDashoffset =
+                circumference - (current / 100) * circumference;
+              requestAnimationFrame(animate);
+            };
+
+            // Set initial properties
+            ring.style.stroke = `url(#${gradient})`;
+            ring.style.strokeDasharray = circumference;
+
+            // Start animation
+            animate();
+          };
+
+          // Update all scores
+          console.log("Updating scores...");
+          updateScore(
+            "credibility-score",
+            scores.credibility_score,
+            "gradient-1"
+          );
+          updateScore("bias-score", scores.bias_score, "gradient-2");
+          updateScore(
+            "reliability-score",
+            scores.source_reliability,
+            "gradient-3"
+          );
+
+          // Determine status based on classification and confidence
+          const classification = (data.classification || "").toLowerCase();
+          const confidence = data.confidence || 0;
+
+          let status;
+          if (confidence < 40) {
+            status = "suspicious";
+          } else if (classification === "fake" || classification === "false") {
+            status = "fake";
+          } else if (classification === "real" || classification === "true") {
+            status = "verified";
+          } else {
+            status = "suspicious";
+          }
+
+          console.log("Status determination:", {
+            classification,
+            confidence,
+            status,
+          });
+
+          // Update status badge
+          const statusClass =
+            {
+              verified: "verified",
+              suspicious: "suspicious",
+              fake: "fake",
+            }[status] || "suspicious";
+
+          const statusBadge = document.createElement("div");
+          statusBadge.className = `status-badge ${statusClass}`;
+          statusBadge.textContent =
+            status.charAt(0).toUpperCase() + status.slice(1);
+
+          const credibilityScore = document.getElementById("credibility-score");
+          if (credibilityScore) {
+            const existingBadge = credibilityScore
+              .closest(".score-ring")
+              .querySelector(".status-badge");
+            if (existingBadge) {
+              existingBadge.remove();
+            }
+            credibilityScore.closest(".score-ring").appendChild(statusBadge);
+          }
+
+          // Update fact checks and similar claims
+          const updateContainer = (containerId, items, templateFn) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!Array.isArray(items)) items = [];
+            container.innerHTML = items.map(templateFn).join("");
+            console.log(`Updated ${containerId} with ${items.length} items`);
+          };
+
+          // Update containers
+          updateContainer(
+            "fact-checks",
+            data.fact_checks || [],
+            (check) => `
+            <div class="fact-check-card">
+              <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary)">${
+                check.claim || "No claim available"
+              }</h3>
+              <p class="mb-3" style="color: var(--text-secondary)">${
+                check.explanation || "No explanation available"
+              }</p>
+              <div class="source-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="mr-2">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                ${check.source ? check.source.name : "Source Unavailable"}
+              </div>
+            </div>
+          `
+          );
+
+          updateContainer(
+            "similar-claims",
+            data.similar_claims || [],
+            (claim) => `
+            <div class="fact-check-card">
+              <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary)">${
+                claim.title || "No title available"
+              }</h3>
+              <p class="mb-3" style="color: var(--text-secondary)">${
+                claim.snippet || "No details available"
+              }</p>
+              <div class="source-badge">
+                Credibility: ${
+                  claim.source_credibility
+                    ? Math.round(
+                        claim.source_credibility.credibility_score * 100
+                      )
+                    : 0
+                }%
+              </div>
+            </div>
+          `
+          );
+
+          console.groupEnd();
+        }
+
+        // Add to existing script
+        document.querySelectorAll(".expandable-card").forEach((card) => {
+          card.querySelector(".card-header").addEventListener("click", () => {
+            console.log("Card clicked:", card.querySelector("h2").textContent);
+            card.classList.toggle("expanded");
+            card.querySelector(".content").style.maxHeight =
+              card.classList.contains("expanded")
+                ? `${card.querySelector(".content").scrollHeight}px`
+                : "0";
+          });
+        });
+
+        console.log("Page initialization completed");
+      });
+    </script>
+  </body>
+</html>
